@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Customer Compensation Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #005238;
+      text-align: center;
+      padding: 0;
+      margin: 0;
+    }
+
+    .top-section {
+      padding: 10px 0 5px;
+    }
+
+    .top-logo {
+      width: 100px;
+      display: block;
+      margin: 10px auto 0;
+    }
+
+    h1 {
+      color: #d7fc00;
+      font-weight: 600;
+      margin: 5px 0 10px;
+      font-size: 20px;
+    }
+
+    p {
+      color: #fffcfd;
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .type-buttons {
+      margin: 10px 0;
+    }
+
+    .type-buttons button,
+    .add-btn,
+    .main-buttons {
+      background-color: #ccf300;
+      border: none;
+      color: #003e2f;
+      padding: 8px 14px;
+      margin: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 5px;
+      font-weight: 600;
+    }
+
+    .type-buttons button:hover,
+    .add-btn:hover,
+    .main-buttons:hover {
+      background-color: #b3d200;
+    }
+
+    .type-buttons .active {
+      background-color: #8B0000 !important;
+      color: #d7fc00 !important;
+    }
+
+    .inputs {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin: 10px 0;
+    }
+
+    .input-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .custom-input {
+      display: flex;
+      align-items: center;
+    }
+
+    .custom-input input {
+      padding: 8px;
+      width: 80px;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    .custom-buttons {
+      display: flex;
+      flex-direction: column;
+      margin-left: 5px;
+    }
+
+    .custom-buttons button {
+      background-color: #ccf300;
+      border: none;
+      width: 20px;
+      height: 20px;
+      font-size: 10px;
+      cursor: pointer;
+      line-height: 1;
+      margin: 1px 0;
+      border-radius: 3px;
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 10px 0;
+    }
+
+    #result {
+      margin-top: 10px;
+      font-size: 18px;
+      color: #fffcfd;
+    }
+
+    .corner-image {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      width: 80px;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-section">
+    <img src="Untitled-4-03-3.png" alt="Rabbit Logo" class="top-logo">
+    <h1>Customer Compensation Calculator</h1>
+    <p>Enter values below.</p>
+  </div>
+
+  <div class="type-buttons">
+    <button onclick="selectType('SIS')" id="btn-sis">SIS</button>
+    <button onclick="selectType('Normal')" id="btn-normal">Normal</button>
+  </div>
+
+  <div class="inputs" id="input-container">
+    <div class="input-wrapper">
+      <div class="custom-input">
+        <input type="number" placeholder="Value" oninput="calculate()" data-base="">
+        <div class="custom-buttons">
+          <button onclick="doubleUp(this)">↑</button>
+          <button onclick="doubleDown(this)">↓</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-buttons">
+    <button class="add-btn" onclick="addInput()">+ Add More</button>
+    <button class="main-buttons" onclick="clearInputs()">Clear</button>
+    <button class="main-buttons" onclick="copyResult()">Copy Result</button>
+  </div>
+
+  <div id="result"></div>
+
+  <img src="https://i.ibb.co/hJ2PyfvF/fa5d8737-3e2a-4112-8885-d5c2e123cd02.png" class="corner-image" alt="Brand">
+
+  <script>
+    let selectedType = null;
+
+    function selectType(type) {
+      selectedType = type;
+      document.getElementById("btn-sis").classList.toggle("active", type === "SIS");
+      document.getElementById("btn-normal").classList.toggle("active", type === "Normal");
+      calculate();
+    }
+
+    function addInput() {
+      const container = document.getElementById("input-container");
+      const wrapper = document.createElement("div");
+      wrapper.className = "input-wrapper";
+      wrapper.innerHTML = `
+        <div class="custom-input">
+          <input type="number" placeholder="Value" oninput="calculate()" data-base="">
+          <div class="custom-buttons">
+            <button onclick="doubleUp(this)">↑</button>
+            <button onclick="doubleDown(this)">↓</button>
+          </div>
+        </div>
+      `;
+      container.appendChild(wrapper);
+    }
+
+    function doubleUp(button) {
+      const input = button.closest('.custom-input').querySelector('input');
+      let base = input.getAttribute('data-base');
+
+      if (!base || base === '') {
+        base = parseFloat(input.value) || 0;
+        input.setAttribute('data-base', base);
+      }
+
+      const current = parseFloat(input.value) || 0;
+      input.value = current + parseFloat(base);
+      calculate();
+    }
+
+    function doubleDown(button) {
+      const input = button.closest('.custom-input').querySelector('input');
+      const base = parseFloat(input.getAttribute('data-base')) || parseFloat(input.value) || 0;
+
+      input.setAttribute('data-base', base);
+      const current = parseFloat(input.value) || 0;
+      input.value = Math.max(0, current - base);
+      calculate();
+    }
+
+    function calculate() {
+      if (!selectedType) {
+        document.getElementById("result").innerText = '';
+        return;
+      }
+
+      const inputs = document.querySelectorAll('#input-container input');
+      let base = 0;
+
+      inputs.forEach(input => {
+        base += parseFloat(input.value) || 0;
+      });
+
+      if (base === 0) {
+        document.getElementById("result").innerText = '';
+        return;
+      }
+
+      const extra = selectedType === "SIS" ? 42 : 27;
+      const total = base + extra;
+      document.getElementById("result").innerText = `Result: ${total}`;
+    }
+
+    function clearInputs() {
+      const container = document.getElementById("input-container");
+      container.innerHTML = `
+        <div class="input-wrapper">
+          <div class="custom-input">
+            <input type="number" placeholder="Value" oninput="calculate()" data-base="">
+            <div class="custom-buttons">
+              <button onclick="doubleUp(this)">↑</button>
+              <button onclick="doubleDown(this)">↓</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.getElementById("result").innerText = '';
+      selectedType = null;
+      document.getElementById("btn-sis").classList.remove("active");
+      document.getElementById("btn-normal").classList.remove("active");
+    }
+
+    function copyResult() {
+      const resultText = document.getElementById("result").innerText.replace('Result: ', '');
+      if (!resultText.trim()) {
+        alert("Please select type and enter values first!");
+        return;
+      }
+      navigator.clipboard.writeText(resultText).then(() => {
+        alert("Result copied to clipboard!");
+      });
+    }
+  </script>
+
+</body>
+</html>
