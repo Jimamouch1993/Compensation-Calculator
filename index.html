@@ -42,7 +42,7 @@
 
     .type-buttons button,
     .add-btn,
-    .main-buttons {
+    .main-buttons button {
       background-color: #ccf300;
       border: none;
       color: #003e2f;
@@ -56,7 +56,7 @@
 
     .type-buttons button:hover,
     .add-btn:hover,
-    .main-buttons:hover {
+    .main-buttons button:hover {
       background-color: #b3d200;
     }
 
@@ -109,18 +109,19 @@
       border-radius: 3px;
     }
 
-    .action-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin: 10px 0;
+    .add-btn {
+      margin-top: 10px;
+    }
+
+    .main-buttons {
+      margin-top: 10px;
     }
 
     #result {
-      margin-top: 10px;
-      font-size: 18px;
+      margin-top: 15px;
+      font-size: 20px;
       color: #fffcfd;
+      font-weight: bold;
     }
 
     .corner-image {
@@ -157,10 +158,11 @@
     </div>
   </div>
 
-  <div class="action-buttons">
-    <button class="add-btn" onclick="addInput()">+ Add More</button>
-    <button class="main-buttons" onclick="clearInputs()">Clear</button>
-    <button class="main-buttons" onclick="copyResult()">Copy Result</button>
+  <button class="add-btn" onclick="addInput()">+ Add More</button>
+
+  <div class="main-buttons">
+    <button onclick="clearInputs()">Clear</button>
+    <button onclick="copyResult()">Copy Result</button>
   </div>
 
   <div id="result"></div>
@@ -196,12 +198,10 @@
     function doubleUp(button) {
       const input = button.closest('.custom-input').querySelector('input');
       let base = input.getAttribute('data-base');
-
       if (!base || base === '') {
         base = parseFloat(input.value) || 0;
         input.setAttribute('data-base', base);
       }
-
       const current = parseFloat(input.value) || 0;
       input.value = current + parseFloat(base);
       calculate();
@@ -210,7 +210,6 @@
     function doubleDown(button) {
       const input = button.closest('.custom-input').querySelector('input');
       const base = parseFloat(input.getAttribute('data-base')) || parseFloat(input.value) || 0;
-
       input.setAttribute('data-base', base);
       const current = parseFloat(input.value) || 0;
       input.value = Math.max(0, current - base);
