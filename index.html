@@ -10,7 +10,6 @@
       background-color: #005238;
       text-align: center;
       padding: 20px;
-      position: relative;
     }
 
     h1 {
@@ -24,6 +23,7 @@
 
     .inputs {
       display: flex;
+      flex-wrap: wrap;
       justify-content: center;
       gap: 20px;
       margin: 20px 0;
@@ -70,7 +70,8 @@
     }
 
     .main-buttons button,
-    .type-buttons button {
+    .type-buttons button,
+    .add-btn {
       background-color: #ccf300;
       border: none;
       color: #003e2f;
@@ -83,7 +84,8 @@
     }
 
     .main-buttons button:hover,
-    .type-buttons button:hover {
+    .type-buttons button:hover,
+    .add-btn:hover {
       background-color: #b3d200;
     }
 
@@ -117,37 +119,20 @@
     <button onclick="selectType('Normal')" id="btn-normal">Normal</button>
   </div>
 
-  <div class="inputs">
+  <div class="inputs" id="input-container">
+    <!-- أول بوكس بشكل تلقائي -->
     <div class="input-wrapper">
       <div class="custom-input">
-        <input type="number" id="input1" placeholder="Value 1" value="0">
+        <input type="number" placeholder="Value" oninput="calculate()">
         <div class="custom-buttons">
-          <button onclick="doubleUp('input1')">↑</button>
-          <button onclick="doubleDown('input1')">↓</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="input-wrapper">
-      <div class="custom-input">
-        <input type="number" id="input2" placeholder="Value 2" value="0">
-        <div class="custom-buttons">
-          <button onclick="doubleUp('input2')">↑</button>
-          <button onclick="doubleDown('input2')">↓</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="input-wrapper">
-      <div class="custom-input">
-        <input type="number" id="input3" placeholder="Value 3" value="0">
-        <div class="custom-buttons">
-          <button onclick="doubleUp('input3')">↑</button>
-          <button onclick="doubleDown('input3')">↓</button>
+          <button onclick="doubleUp(this)">↑</button>
+          <button onclick="doubleDown(this)">↓</button>
         </div>
       </div>
     </div>
   </div>
+
+  <button class="add-btn" onclick="addInput()">+ Add More</button>
 
   <div class="main-buttons">
     <button onclick="clearInputs()">Clear</button>
@@ -156,41 +141,45 @@
 
   <div id="result"></div>
 
-  <!-- صورة البراند -->
-  <img src="https://i.ibb.co/hJ2PyfvF/fa5d8737-3e2a-4112-8885-d5c2e123cd02.png" class="corner-image" alt="Brand Image">
+  <img src="https://i.ibb.co/hJ2PyfvF/fa5d8737-3e2a-4112-8885-d5c2e123cd02.png" class="corner-image" alt="Brand">
 
   <script>
     let selectedType = null;
 
-    function getValue(id) {
-      return parseFloat(document.getElementById(id).value) || 0;
+    function selectType(type) {
+      selectedType = type;
+      document.getElementById("btn-sis").classList.toggle("active", type === "SIS");
+      document.getElementById("btn-normal").classList.toggle("active", type === "Normal");
+      calculate();
     }
 
-    function doubleUp(id) {
-      const input = document.getElementById(id);
-      const value = getValue(id);
+    function addInput() {
+      const container = document.getElementById("input-container");
+      const wrapper = document.createElement("div");
+      wrapper.className = "input-wrapper";
+      wrapper.innerHTML = `
+        <div class="custom-input">
+          <input type="number" placeholder="Value" oninput="calculate()">
+          <div class="custom-buttons">
+            <button onclick="doubleUp(this)">↑</button>
+            <button onclick="doubleDown(this)">↓</button>
+          </div>
+        </div>
+      `;
+      container.appendChild(wrapper);
+    }
+
+    function doubleUp(button) {
+      const input = button.closest('.custom-input').querySelector('input');
+      const value = parseFloat(input.value) || 0;
       input.value = value + value;
       calculate();
     }
 
-    function doubleDown(id) {
-      const input = document.getElementById(id);
-      const value = getValue(id);
+    function doubleDown(button) {
+      const input = button.closest('.custom-input').querySelector('input');
+      const value = parseFloat(input.value) || 0;
       input.value = value - (value / 2);
-      calculate();
-    }
-
-    function selectType(type) {
-      selectedType = type;
-      document.getElementById("btn-sis").classList.remove("active");
-      document.getElementById("btn-normal").classList.remove("active");
-
-      if (type === 'SIS') {
-        document.getElementById("btn-sis").classList.add("active");
-      } else {
-        document.getElementById("btn-normal").classList.add("active");
-      }
-
       calculate();
     }
 
@@ -200,22 +189,36 @@
         return;
       }
 
-      const val1 = getValue("input1");
-      const val2 = getValue("input2");
-      const val3 = getValue("input3");
+      const inputs = document.querySelectorAll('#input-container input');
+      let base = 0;
 
-      if (val1 === 0 && val2 === 0 && val3 === 0) {
+      inputs.forEach(input => {
+        base += parseFloat(input.value) || 0;
+      });
+
+      if (base === 0) {
         document.getElementById("result").innerText = '';
         return;
       }
 
-      const base = val1 + val2 + val3;
-      const total = selectedType === "SIS" ? base + 15 + 27 : base + 27;
+      const extra = selectedType === "SIS" ? 42 : 27;
+      const total = base + extra;
       document.getElementById("result").innerText = `Result: ${total}`;
     }
 
     function clearInputs() {
-      ["input1", "input2", "input3"].forEach(id => document.getElementById(id).value = '');
+      const container = document.getElementById("input-container");
+      container.innerHTML = `
+        <div class="input-wrapper">
+          <div class="custom-input">
+            <input type="number" placeholder="Value" oninput="calculate()">
+            <div class="custom-buttons">
+              <button onclick="doubleUp(this)">↑</button>
+              <button onclick="doubleDown(this)">↓</button>
+            </div>
+          </div>
+        </div>
+      `;
       document.getElementById("result").innerText = '';
       selectedType = null;
       document.getElementById("btn-sis").classList.remove("active");
@@ -224,7 +227,7 @@
 
     function copyResult() {
       const resultText = document.getElementById("result").innerText.replace('Result: ', '');
-      if (resultText.trim() === '') {
+      if (!resultText.trim()) {
         alert("Please select type and enter values first!");
         return;
       }
@@ -232,12 +235,6 @@
         alert("Result copied to clipboard!");
       });
     }
-
-    ["input1", "input2", "input3"].forEach(id => {
-      document.getElementById(id).addEventListener("input", function () {
-        calculate();
-      });
-    });
   </script>
 
 </body>
