@@ -141,7 +141,7 @@
   </div>
 
   <div class="type-buttons">
-    <button onclick="selectType('SIS')" id="btn-sis">SIS</button>
+    <button onclick="selectType('KK')" id="btn-kk">KK</button>
     <button onclick="selectType('Normal')" id="btn-normal">Normal</button>
   </div>
 
@@ -172,7 +172,7 @@
 
     function selectType(type) {
       selectedType = type;
-      document.getElementById("btn-sis").classList.toggle("active", type === "SIS");
+      document.getElementById("btn-kk").classList.toggle("active", type === "KK");
       document.getElementById("btn-normal").classList.toggle("active", type === "Normal");
       calculate();
     }
@@ -235,7 +235,7 @@
         return;
       }
 
-      const extra = selectedType === "SIS" ? 42 : 27;
+      const extra = selectedType === "KK" ? 40 : 27;
       const total = base + extra;
       document.getElementById("result").innerText = `Result: ${total}`;
     }
@@ -255,7 +255,7 @@
       `;
       document.getElementById("result").innerText = '';
       selectedType = null;
-      document.getElementById("btn-sis").classList.remove("active");
+      document.getElementById("btn-kk").classList.remove("active");
       document.getElementById("btn-normal").classList.remove("active");
     }
 
